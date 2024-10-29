@@ -1,0 +1,105 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        kotlin_version = '1.6.10'
+
+        // The oldest Android version we support.  Increasing this stops updates
+        // for users on old devices, but can simplify the system.  Synced with
+        // our dev docs: docs/developer-guide.md
+        minSdkVersion = 24
+
+        // A bit subtle: we should try to keep this at the latest version,
+        // but some testing is required and code changes are often required.
+        // See upstream for background and more discussion:
+        //   https://medium.com/androiddevelopers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
+        targetSdkVersion = 33
+
+        // Should be the latest SDK version available.  See upstream recommendation:
+        //   https://medium.com/androiddevelopers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
+        // What's the latest?  Consult this list:
+        //   https://developer.android.com/studio/releases/platforms
+        compileSdkVersion = 33
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:7.2.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        exclusiveContent {
+            // We get React Native's Android binaries exclusively through npm,
+            // from a local Maven repo inside node_modules/react-native/.
+            // (The use of exclusiveContent prevents looking elsewhere like Maven Central
+            // and potentially getting a wrong version.)
+
+            // TODO(react-native-71): This whole local Maven repo will be obsolete; delete it.
+            //   See: https://chat.zulip.org/#narrow/stream/243-mobile-team/topic/build.20failure.3A.20libfbjni.2Eso.20duplicated/near/1460666
+            filter {
+                includeGroup "com.facebook.react"
+            }
+            forRepository {
+                maven {
+                    url "$rootDir/../node_modules/react-native/android"
+                }
+            }
+        }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+
+        mavenCentral()
+        google()
+
+        // The retired "jcenter" repo.
+        // TODO: Get rid of this, when no deps use it.
+        jcenter() {
+            content {
+                // Allow jcenter for only me.relex:photodraweeview:1.1.3:
+                //   https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:declaring-repository-filter
+                // Unfortunately, react-native-photo-view (which we want to
+                // stop using: #4217) still depends on this, and it's only
+                // available from jcenter.
+                // TODO(#4217): Remove this and the whole `jcenter()` block.
+                includeVersion("me.relex", "photodraweeview", "1.1.3")
+            }
+        }
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        if (project.hasProperty("android")) {
+            android.compileSdkVersion rootProject.ext.compileSdkVersion
+        }
+    }
+}
+
+// Force all our third-party dependencies to a sensible buildToolsVersion.
+// What version should that be?  It's whatever the Android plugin applied
+// to our app project.
+project(":app").afterEvaluate {
+    ext.buildToolsVersion = it.android.buildToolsVersion
+}
+subprojects {
+    if (path != ":app") {
+        // This line is tricky -- it causes :app to be (sort of?) evaluated,
+        // so the `project(":app").afterEvaluate` must come first.
+        evaluationDependsOn(":app")
+        afterEvaluate {
+            if (project.hasProperty("android")) {
+                android.buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
+}
