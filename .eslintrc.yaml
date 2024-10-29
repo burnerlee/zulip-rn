@@ -19,7 +19,6 @@
 #     $ npx eslint --print-config src/bar.js | jq . --sorted >/tmp/bar.json
 #     $ git diff --no-index /tmp/{foo,bar}.json
 
-
 parser: "hermes-eslint"
 
 extends:
