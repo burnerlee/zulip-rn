@@ -6,7 +6,7 @@ import { apiPost } from '../apiFetch';
 /** See https://zulip.com/api/send-message */
 export default async (
   auth: Auth,
-  params: {|
+  params: {|  
     type: 'private' | 'stream',
     to: string,
     // TODO(server-2.0): Say "topic", not "subject"
@@ -15,12 +15,14 @@ export default async (
     localId?: number,
     eventQueueId?: string,
   |},
-): Promise<ApiResponse> =>
-  apiPost(auth, 'messages', {
-    type: params.type,
+): Promise<ApiResponse> => {
+  const messageType = params.type === 'private' ? 'direct' : params.type;
+  return apiPost(auth, 'messages', {
+    type: messageType,
     to: params.to,
     subject: params.subject,
     content: params.content,
     local_id: params.localId,
     queue_id: params.eventQueueId,
   });
+}
