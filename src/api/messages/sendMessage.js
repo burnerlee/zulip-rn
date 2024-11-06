@@ -17,10 +17,12 @@ export default async (
   |},
   zulipFeatureLevel: number,
 ): Promise<ApiResponse> => {
+  // Determine the message type to use based on the server's feature level.
+  // For servers with feature level 174 or higher, use 'direct' for private messages.
   const messageType = zulipFeatureLevel >= 174 && params.type === 'private' ? 'direct' : params.type;
 
   return apiPost(auth, 'messages', {
-    type: messageType,
+    type: messageType, // Use the determined message type.
     to: params.to,
     subject: params.subject,
     content: params.content,
