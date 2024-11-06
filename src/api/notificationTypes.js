@@ -66,7 +66,7 @@ type StreamData = {|
 /** For a notification about a PM. */
 type PmData = {|
   ...BaseData,
-  +recipient_type: 'private',
+  +recipient_type: 'direct', // Updated from 'private' to 'direct'
 
   /**
    * The recipient user IDs, if this is a group PM; absent for 1:1 PMs.
