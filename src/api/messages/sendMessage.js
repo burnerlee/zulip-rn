@@ -14,13 +14,20 @@ export default async (
     content: string,
     localId?: number,
     eventQueueId?: string,
+    zulipFeatureLevel?: number,
   |},
-): Promise<ApiResponse> =>
-  apiPost(auth, 'messages', {
-    type: params.type,
+): Promise<ApiResponse> => {
+  const messageType =
+    params.zulipFeatureLevel && params.zulipFeatureLevel >= 174 && params.type === 'private'
+      ? 'direct'
+      : params.type;
+
+  return apiPost(auth, 'messages', {
+    type: messageType,
     to: params.to,
     subject: params.subject,
     content: params.content,
     local_id: params.localId,
     queue_id: params.eventQueueId,
   });
+};
