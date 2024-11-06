@@ -97,12 +97,7 @@ const messageFetchComplete = (args: {|
  * stored in Redux. If it rejects, it tells Redux about it.
  */
 export const fetchMessages =
-  (fetchArgs: {|
-    narrow: Narrow,
-    anchor: number,
-    numBefore: number,
-    numAfter: number,
-  |}): ThunkAction<
+  (fetchArgs: {| narrow: Narrow, anchor: number, numBefore: number, numAfter: number |}): ThunkAction<
     Promise<{| messages: $ReadOnlyArray<Message>, foundNewest: boolean, foundOldest: boolean |}>,
   > =>
   async (dispatch, getState) => {
@@ -123,6 +118,7 @@ export const fetchMessages =
                 getStreamsById(getState()),
               ),
               useFirstUnread: fetchArgs.anchor === FIRST_UNREAD_ANCHOR, // TODO: don't use this; see #4203
+              type: getZulipFeatureLevel(getState()) >= 174 && fetchArgs.narrow === ALL_PRIVATE_NARROW ? 'direct' : undefined,
             },
             getZulipFeatureLevel(getState()),
             getRealm(getState()).allowEditHistory,
@@ -284,6 +280,7 @@ export const fetchPrivateMessages =
         anchor: LAST_MESSAGE_ANCHOR,
         numBefore: 100,
         numAfter: 0,
+        type: getZulipFeatureLevel(getState()) >= 174 ? 'direct' : undefined,
       },
       getZulipFeatureLevel(getState()),
       getRealm(getState()).allowEditHistory,

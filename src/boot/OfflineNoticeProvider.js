@@ -21,6 +21,14 @@ import type { ThemeName } from '../reduxTypes';
 import { TranslationContext } from './TranslationProvider';
 import { appOnline } from '../session/sessionActions';
 
+/**
+ * Hook to update session state based on connectivity changes.
+ *
+ * This hook listens for changes in network connectivity and updates the
+ * session state accordingly. It uses the NetInfo library to detect network
+ * changes and dispatches the `appOnline` action with the current internet
+ * reachability status.
+ */
 function useUpdateSessionOnConnectivityChange() {
   const dispatch = useDispatch();
 
@@ -80,6 +88,15 @@ function useUpdateSessionOnConnectivityChange() {
   }, [dispatch]);
 }
 
+/**
+ * Hook to determine if an uncertainty notice should be shown.
+ *
+ * This hook checks if the app has taken longer than expected to determine
+ * internet reachability. If so, it logs a warning and returns true to
+ * indicate that an uncertainty notice should be shown.
+ *
+ * @returns {boolean} True if an uncertainty notice should be shown, false otherwise.
+ */
 function useShouldShowUncertaintyNotice(): boolean {
   const isOnline = useGlobalSelector(state => getGlobalSession(state).isOnline);
 
@@ -124,10 +141,14 @@ const OfflineNoticeContext = React.createContext({
   noticeContentAreaHeight: 0,
 });
 
-type ProviderProps = {|
-  +children: Node,
-|};
+type ProviderProps = {| +children: Node |};
 
+/**
+ * Determines the background color for the offline notice based on the theme.
+ *
+ * @param {ThemeName} theme - The current theme name.
+ * @returns {string} The background color for the offline notice.
+ */
 const backgroundColorForTheme = (theme: ThemeName): string =>
   // TODO(redesign): Choose these more intentionally; these are just the
   //   semitransparent HALF_COLOR flattened with themeData.backgroundColor.
@@ -135,17 +156,15 @@ const backgroundColorForTheme = (theme: ThemeName): string =>
   theme === 'light' ? '#bfbfbf' : '#50565e';
 
 /**
- * Shows a notice if the app is working in offline mode.
+ * Provides an offline notice banner at the top of the screen.
  *
- * Shows a different notice if we've taken longer than we expect to
- * determine Internet reachability. IOW, if the user sees this, there's a
- * bug.
+ * This component shows a notice if the app is working in offline mode or
+ * if there's an issue determining internet reachability. The notice is a
+ * banner at the top of the screen, and all screens should render an
+ * OfflineNoticePlaceholder to ensure the banner doesn't hide any content.
  *
- * Shows nothing if the Internet is reachable.
- *
- * The notice is a banner at the top of the screen. All screens should
- * render a OfflineNoticePlaceholder so that banner doesn't hide any of the
- * screen's content; see there for details.
+ * @param {ProviderProps} props - The component props.
+ * @returns {Node} The rendered component.
  */
 export function OfflineNoticeProvider(props: ProviderProps): Node {
   const theme = useGlobalSelector(state => getGlobalSettings(state).theme);
