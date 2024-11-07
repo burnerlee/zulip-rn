@@ -17,6 +17,7 @@ export default async (
   |},
 ): Promise<ApiResponse> =>
   apiPost(auth, 'messages', {
+    // Use 'direct' for private messages if the server supports it
     type: params.type === 'private' ? 'direct' : params.type,
     to: params.to,
     subject: params.subject,
