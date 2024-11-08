@@ -1,4 +1,8 @@
 /* @flow strict-local */
+import { Dimensions, StyleSheet } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+const isLandscape = width > height;
 
 export default {
   // Padding
@@ -89,4 +93,13 @@ export default {
   halfMarginRight: {
     marginRight: 8,
   },
+  // Landscape specific styles
+  ...(isLandscape ? {
+    landscapePadding: {
+      padding: 20,
+    },
+    landscapeMargin: {
+      margin: 20,
+    },
+  } : {}),
 };
