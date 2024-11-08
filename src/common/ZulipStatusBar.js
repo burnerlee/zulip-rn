@@ -25,7 +25,7 @@ export const getStatusBarStyle = (statusBarColor: string): BarStyle =>
 type Props = $ReadOnly<{|
   backgroundColor?: string | void,
   hidden?: boolean,
-|}>;
+|}>;  
 
 /**
  * Renders an RN `StatusBar` with appropriate props, and nothing else.
@@ -55,14 +55,12 @@ export default function ZulipStatusBar(props: Props): Node {
   const statusBarColor = getStatusBarColor(backgroundColor, themeToUse);
 
   return (
-    orientation === 'PORTRAIT' && (
-      <StatusBar
-        animated
-        showHideTransition="slide"
-        hidden={hidden && Platform.OS !== 'android'}
-        backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
-        barStyle={getStatusBarStyle(statusBarColor)}
-      />
-    )
+    <StatusBar
+      animated
+      showHideTransition="slide"
+      hidden={hidden && Platform.OS !== 'android'}
+      backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
+      barStyle={getStatusBarStyle(statusBarColor)}
+    />
   );
 }
