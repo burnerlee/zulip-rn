@@ -223,7 +223,7 @@ export default (isDarkMode: boolean): string => `
 
 
 /* Syntax Highlighting for dark-mode */
-${
+$ {
   isDarkMode
     ? `
     .codehilite code,
