@@ -6,6 +6,7 @@ import composeBoxStyles from './composeBoxStyles';
 import { statics as miscStyles } from './miscStyles';
 import { statics as navStyles } from './navStyles';
 import utilityStyles from './utilityStyles';
+import { Dimensions } from 'react-native';
 
 export * from './constants';
 export type { ThemeData } from './theme';
@@ -54,6 +55,11 @@ const styles = Object.freeze({
   ...miscStyles,
   ...navStyles,
   ...utilityStyles,
+  landscape: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 // Check the contents of `styles` (see comment above).
