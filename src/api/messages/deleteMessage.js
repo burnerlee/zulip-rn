@@ -10,5 +10,5 @@ import { apiPatch } from '../apiFetch';
 // time, and maybe more; we'll want #3898 if we can.
 export default async (auth: Auth, id: number): Promise<ApiResponse> =>
   apiPatch(auth, `messages/${id}`, {
-    content: '',
+    content: '(deleted)',
   });
