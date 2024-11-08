@@ -1,7 +1,7 @@
 /* @flow strict-local */
 import React, { useState, useCallback } from 'react';
 import type { Node } from 'react';
-import { View } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 import Input from './Input';
 import type { Props as InputProps } from './Input';
@@ -10,11 +10,14 @@ import ZulipTextIntl from './ZulipTextIntl';
 import Touchable from './Touchable';
 
 const styles = createStyleSheet({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+  },
   showPasswordButton: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
     justifyContent: 'center',
   },
   showPasswordButtonText: {
@@ -44,8 +47,14 @@ export default function PasswordInput(props: Props): Node {
   }, []);
 
   return (
-    <View>
-      <Input {...props} secureTextEntry={isHidden} autoCorrect={false} autoCapitalize="none" />
+    <View style={styles.container}>
+      <Input
+        {...props}
+        style={styles.input}
+        secureTextEntry={isHidden}
+        autoCorrect={false}
+        autoCapitalize="none"
+      />
       <Touchable style={styles.showPasswordButton} onPress={handleShow}>
         <ZulipTextIntl style={styles.showPasswordButtonText} text={isHidden ? 'show' : 'hide'} />
       </Touchable>
