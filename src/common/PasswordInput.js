@@ -1,13 +1,12 @@
 /* @flow strict-local */
 import React, { useState, useCallback } from 'react';
 import type { Node } from 'react';
-import { View, TextInput } from 'react-native';
+import { View, Pressable } from 'react-native';
 
 import Input from './Input';
 import type { Props as InputProps } from './Input';
 import { BRAND_COLOR, createStyleSheet } from '../styles';
 import ZulipTextIntl from './ZulipTextIntl';
-import Touchable from './Touchable';
 
 const styles = createStyleSheet({
   container: {
@@ -55,9 +54,9 @@ export default function PasswordInput(props: Props): Node {
         autoCorrect={false}
         autoCapitalize="none"
       />
-      <Touchable style={styles.showPasswordButton} onPress={handleShow}>
+      <Pressable style={styles.showPasswordButton} onPress={handleShow}>
         <ZulipTextIntl style={styles.showPasswordButtonText} text={isHidden ? 'show' : 'hide'} />
-      </Touchable>
+      </Pressable>
     </View>
   );
 }
