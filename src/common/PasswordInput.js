@@ -1,7 +1,7 @@
 /* @flow strict-local */
 import React, { useState, useCallback } from 'react';
 import type { Node } from 'react';
-import { View, Pressable } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 import Input from './Input';
 import type { Props as InputProps } from './Input';
@@ -42,10 +42,9 @@ export default function PasswordInput(props: Props): Node {
   return (
     <View style={styles.container}>
       <Input {...props} secureTextEntry={isHidden} autoCorrect={false} autoCapitalize="none" />
-      {/* Using Pressable instead of Touchable for better performance and compatibility */}
-      <Pressable style={styles.showPasswordButton} onPress={handleShow}>
+      <Touchable style={styles.showPasswordButton} onPress={handleShow}>
         <ZulipTextIntl style={styles.showPasswordButtonText} text={isHidden ? 'show' : 'hide'} />
-      </Pressable>
+      </Touchable>
     </View>
   );
 }
