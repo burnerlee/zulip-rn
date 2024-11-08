@@ -1,11 +1,11 @@
 /* @flow strict-local */
-// eslint-disable-next-line id-match
 import type { ____Styles_Internal } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 import composeBoxStyles from './composeBoxStyles';
 import { statics as miscStyles } from './miscStyles';
 import { statics as navStyles } from './navStyles';
 import utilityStyles from './utilityStyles';
+import { Dimensions } from 'react-native';
 
 export * from './constants';
 export type { ThemeData } from './theme';
@@ -54,6 +54,16 @@ const styles = Object.freeze({
   ...miscStyles,
   ...navStyles,
   ...utilityStyles,
+  landscape: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  portrait: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+  },
 });
 
 // Check the contents of `styles` (see comment above).
