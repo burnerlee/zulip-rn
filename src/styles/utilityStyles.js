@@ -1,4 +1,5 @@
 /* @flow strict-local */
+import { Dimensions } from 'react-native';
 
 export default {
   // Padding
@@ -88,5 +89,12 @@ export default {
   },
   halfMarginRight: {
     marginRight: 8,
+  },
+  // Orientation specific styles
+  landscapePadding: {
+    padding: 12,
+  },
+  landscapeMargin: {
+    margin: 12,
   },
 };
