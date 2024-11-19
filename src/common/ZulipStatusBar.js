@@ -55,12 +55,16 @@ export default function ZulipStatusBar(props: Props): Node {
   const statusBarColor = getStatusBarColor(backgroundColor, themeToUse);
 
   return (
-    <StatusBar
-      animated
-      showHideTransition="slide"
-      hidden={hidden && Platform.OS !== 'android'}
-      backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
-      barStyle={getStatusBarStyle(statusBarColor)}
-    />
+    // Render the StatusBar only when the orientation is 'PORTRAIT'.
+    // This ensures the status bar is not shown in landscape mode.
+    orientation === 'PORTRAIT' && (
+      <StatusBar
+        animated
+        showHideTransition="slide"
+        hidden={hidden && Platform.OS !== 'android'}
+        backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
+        barStyle={getStatusBarStyle(statusBarColor)}
+      />
+    )
   );
 }
