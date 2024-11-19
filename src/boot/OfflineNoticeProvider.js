@@ -210,14 +210,14 @@ export function OfflineNoticeProvider(props: ProviderProps): Node {
     // another app.)
 
     if (shouldShowUncertaintyNotice && !haveAnnouncedUncertain.current) {
+      // Use announceForAccessibilityWithOptions to queue this behind any in-progress announcements
       AccessibilityInfo.announceForAccessibilityWithOptions(
-        _('Zulip’s Internet connection is uncertain.'),
-        { queue: true }
-      );
+        _('Zulip’s Internet connection is uncertain.'), { queue: true });
       haveAnnouncedUncertain.current = true;
     }
 
     if (isOnline === false && (!haveAnnouncedOffline.current || haveAnnouncedUncertain.current)) {
+      // Announce that Zulip is offline without queuing, as it is a critical update.
       AccessibilityInfo.announceForAccessibility(_('Zulip is offline.'));
       haveAnnouncedOffline.current = true;
       haveAnnouncedUncertain.current = false;
@@ -225,10 +225,9 @@ export function OfflineNoticeProvider(props: ProviderProps): Node {
       isOnline === true
       && (haveAnnouncedOffline.current || haveAnnouncedUncertain.current)
     ) {
+      // Use announceForAccessibilityWithOptions to queue this behind any in-progress announcements
       AccessibilityInfo.announceForAccessibilityWithOptions(
-        _('Zulip is online.'),
-        { queue: true }
-      );
+        _('Zulip is online.'), { queue: true });
       haveAnnouncedOffline.current = false;
       haveAnnouncedUncertain.current = false;
     }
