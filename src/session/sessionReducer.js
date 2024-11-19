@@ -1,4 +1,5 @@
 /* @flow strict-local */
+// Importing necessary types and functions
 import type { GlobalState } from '../reduxTypes';
 import type { Orientation, Action } from '../types';
 import { keyOfIdentity } from '../account/accountMisc';
@@ -7,18 +8,21 @@ import {
   REHYDRATE,
   DEAD_QUEUE,
   RESET_ACCOUNT_DATA,
+  // Action constants for various session-related actions
   APP_ONLINE,
   REGISTER_START,
   REGISTER_ABORT,
   REGISTER_COMPLETE,
   APP_ORIENTATION,
   TOGGLE_OUTBOX_SENDING,
+  // Action constants for push token management
   GOT_PUSH_TOKEN,
   DISMISS_SERVER_COMPAT_NOTICE,
   REGISTER_PUSH_TOKEN_START,
   REGISTER_PUSH_TOKEN_END,
 } from '../actionConstants';
 
+// Type definition for per-account session state
 /**
  * Miscellaneous non-persistent state specific to a particular account.
  *
@@ -37,8 +41,7 @@ export type PerAccountSessionState = $ReadOnly<{
   eventQueueId: string | null,
 
   /**
-   * Whether the /register request is in progress.
-   *
+   * Indicates if the /register request is in progress.
    * This happens on startup, or on re-init following a dead event
    * queue after 10 minutes of inactivity.
    */
@@ -47,8 +50,7 @@ export type PerAccountSessionState = $ReadOnly<{
   outboxSending: boolean,
 
   /**
-   * Whether `ServerCompatBanner` has been dismissed this session.
-   *
+   * Indicates if the ServerCompatBanner has been dismissed this session.
    * We put this in the per-session state deliberately, so that users
    * see the notice on every startup until the server is upgraded.
    * That's a better experience than not being able to load the realm
@@ -58,13 +60,14 @@ export type PerAccountSessionState = $ReadOnly<{
   hasDismissedServerCompatNotice: boolean,
 
   /**
-   * How many `api.savePushToken` requests are in progress for this account.
+   * Number of push token registration requests in progress.
    */
   registerPushTokenRequestsInProgress: number,
 
   ...
 }>;
 
+// Type definition for global session state
 /**
  * Miscellaneous non-persistent state independent of account.
  *
@@ -80,6 +83,7 @@ export type GlobalSessionState = $ReadOnly<{
 
   isHydrated: boolean,
 
+  // Current orientation of the app
   orientation: Orientation,
 
   /**
@@ -91,7 +95,7 @@ export type GlobalSessionState = $ReadOnly<{
    * This is `null` before we've gotten a token. On Android, we may also receive
    * an explicit `null` token if the device can't or won't give us a real one.
    *
-   * See upstream docs:
+   * See upstream docs for more details.
    *   https://firebase.google.com/docs/cloud-messaging/android/client#sample-register
    *   https://developers.google.com/cloud-messaging/android/client
    *   https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns
@@ -101,8 +105,7 @@ export type GlobalSessionState = $ReadOnly<{
   pushToken: string | null,
 
   ...
-}>;
-
+// Type definition for session state combining global and per-account states
 /**
  * Miscellaneous non-persistent state about this run of the app.
  *
@@ -116,11 +119,7 @@ export type SessionState = $ReadOnly<{|
   ...$Exact<PerAccountSessionState>,
 |}>;
 
-// As part of letting GlobalState freely convert to PerAccountState,
-// we'll want the same for SessionState.  (This is also why
-// PerAccountSessionState is inexact.)
-(s: SessionState): PerAccountSessionState => s; // eslint-disable-line no-unused-expressions
-
+// Initial state for global session
 const initialGlobalSessionState: $Exact<GlobalSessionState> = {
   // This will be `null` on startup, while we wait to hear `true` or `false`
   // from the native module over the RN bridge; so, have it start as `null`.
@@ -129,8 +128,7 @@ const initialGlobalSessionState: $Exact<GlobalSessionState> = {
   isHydrated: false,
   orientation: 'PORTRAIT',
   pushToken: null,
-};
-
+// Initial state for per-account session
 /** PRIVATE; exported only for tests. */
 export const initialPerAccountSessionState: $Exact<PerAccountSessionState> = {
   eventQueueId: null,
@@ -140,17 +138,20 @@ export const initialPerAccountSessionState: $Exact<PerAccountSessionState> = {
   registerPushTokenRequestsInProgress: 0,
 };
 
+// Combined initial state
 const initialState: SessionState = {
   ...initialGlobalSessionState,
   ...initialPerAccountSessionState,
 };
 
+// Reducer function handling session-related actions
 export default (
   state: SessionState = initialState, // eslint-disable-line default-param-last
   action: Action,
   globalState: GlobalState,
 ): SessionState => {
   switch (action.type) {
+    // Handle DEAD_QUEUE action
     case DEAD_QUEUE:
       return {
         ...state,
@@ -158,6 +159,7 @@ export default (
 
         // The server told us that the old queue ID is invalid. Forget it,
         // so we don't try to use it.
+        // Reset eventQueueId to null
         eventQueueId: null,
       };
 
@@ -165,19 +167,22 @@ export default (
       return {
         ...state,
 
-        // Clear per-account session state. Importantly, stop polling on the
+        // Clear per-account session state
+        // Importantly, stop polling on the
         // account's current event queue if we had one. In the polling loop,
         // after each server response, we check if we've dropped the queue
         // ID from this state and break out if so.
         ...initialPerAccountSessionState,
       };
 
+    // Handle REHYDRATE action
     case REHYDRATE:
       return {
         ...state,
         isHydrated: true,
       };
 
+    // Handle REGISTER_COMPLETE action
     case REGISTER_COMPLETE:
       return {
         ...state,
@@ -185,36 +190,42 @@ export default (
         eventQueueId: action.data.queue_id,
       };
 
+    // Handle APP_ONLINE action
     case APP_ONLINE:
       return {
         ...state,
         isOnline: action.isOnline,
       };
 
+    // Handle REGISTER_START action
     case REGISTER_START:
       return {
         ...state,
         loading: true,
       };
 
+    // Handle REGISTER_ABORT action
     case REGISTER_ABORT:
       return {
         ...state,
         loading: false,
       };
 
+    // Handle APP_ORIENTATION action
     case APP_ORIENTATION:
       return {
         ...state,
         orientation: action.orientation,
       };
 
+    // Handle GOT_PUSH_TOKEN action
     case GOT_PUSH_TOKEN:
       return {
         ...state,
         pushToken: action.pushToken,
       };
 
+    // Handle REGISTER_PUSH_TOKEN_START action
     case REGISTER_PUSH_TOKEN_START: {
       // TODO(#5006): Do for any account, not just the active one
       const activeAccountState = tryGetActiveAccountState(globalState);
@@ -224,12 +235,14 @@ export default (
       ) {
         return state;
       }
+      // Increment registerPushTokenRequestsInProgress
       return {
         ...state,
         registerPushTokenRequestsInProgress: state.registerPushTokenRequestsInProgress + 1,
       };
     }
 
+    // Handle REGISTER_PUSH_TOKEN_END action
     case REGISTER_PUSH_TOKEN_END: {
       // TODO(#5006): Do for any account, not just the active one
       const activeAccountState = tryGetActiveAccountState(globalState);
@@ -239,18 +252,21 @@ export default (
       ) {
         return state;
       }
+      // Decrement registerPushTokenRequestsInProgress
       return {
         ...state,
         registerPushTokenRequestsInProgress: state.registerPushTokenRequestsInProgress - 1,
       };
     }
 
+    // Handle TOGGLE_OUTBOX_SENDING action
     case TOGGLE_OUTBOX_SENDING:
       return { ...state, outboxSending: action.sending };
 
     case DISMISS_SERVER_COMPAT_NOTICE:
       return {
         ...state,
+        // Mark hasDismissedServerCompatNotice as true
         hasDismissedServerCompatNotice: true,
       };
 
