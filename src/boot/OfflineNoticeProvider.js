@@ -168,7 +168,7 @@ export function OfflineNoticeProvider(props: ProviderProps): Node {
       const newValue = isOnline === false || shouldShowUncertaintyNotice;
       // Don't animate on Android, at least for now. The animation seems to
       // get stuck:
-      //   https://chat.zulip.org/#narrow/stream/48-mobile/topic/android.20.22No.20internet.20connection.22/near/1468556
+      //   https://chat.zulip.org/#narrow/stream/48-mobile.topic/android.20.22No.20internet.20connection.22/near/1468556
       // If we want to try again, see the commit that removed the Android
       // animation, for ideas about handling some bad interactions with
       // react-native-screens.
@@ -210,6 +210,7 @@ export function OfflineNoticeProvider(props: ProviderProps): Node {
     // another app.)
 
     if (shouldShowUncertaintyNotice && !haveAnnouncedUncertain.current) {
+      // Use announceForAccessibilityWithOptions to queue this behind any in-progress announcements
       AccessibilityInfo.announceForAccessibilityWithOptions(
         _('Zulip’s Internet connection is uncertain.'),
         { queue: true },
@@ -225,6 +226,7 @@ export function OfflineNoticeProvider(props: ProviderProps): Node {
       isOnline === true
       && (haveAnnouncedOffline.current || haveAnnouncedUncertain.current)
     ) {
+      // Use announceForAccessibilityWithOptions to queue this behind any in-progress announcements
       AccessibilityInfo.announceForAccessibilityWithOptions(_('Zulip is online.'), { queue: true });
       haveAnnouncedOffline.current = false;
       haveAnnouncedUncertain.current = false;
