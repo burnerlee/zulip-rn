@@ -50,19 +50,19 @@ export default function ZulipStatusBar(props: Props): Node {
   const osScheme = useColorScheme();
   const themeToUse = getThemeToUse(theme, osScheme);
 
+  // Get the current orientation from the global session state
   const orientation = useGlobalSelector(state => getGlobalSession(state).orientation);
   const backgroundColor = props.backgroundColor;
   const statusBarColor = getStatusBarColor(backgroundColor, themeToUse);
 
+  // Render the StatusBar component with the appropriate props
   return (
-    orientation === 'PORTRAIT' && (
-      <StatusBar
-        animated
-        showHideTransition="slide"
-        hidden={hidden && Platform.OS !== 'android'}
-        backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
-        barStyle={getStatusBarStyle(statusBarColor)}
-      />
-    )
+    <StatusBar
+      animated
+      showHideTransition="slide"
+      hidden={hidden && Platform.OS !== 'android'}
+      backgroundColor={Color(statusBarColor).darken(0.1).hsl().string()}
+      barStyle={getStatusBarStyle(statusBarColor)}
+    />
   );
 }
