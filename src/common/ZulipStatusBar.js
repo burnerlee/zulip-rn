@@ -53,6 +53,7 @@ export default function ZulipStatusBar(props: Props): Node {
   const backgroundColor = props.backgroundColor;
   const statusBarColor = getStatusBarColor(backgroundColor, themeToUse);
 
+  // Removed orientation check to ensure status bar is visible in both portrait and landscape
   return (
     <StatusBar
       animated
