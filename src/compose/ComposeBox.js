@@ -306,7 +306,7 @@ const ComposeBox: React$AbstractComponent<Props, ImperativeHandle> = forwardRef(
     (videoChatProvider: VideoChatProvider) => {
       if (videoChatProvider.name === 'jitsi_meet') {
         // This is meant to align with the way the webapp generates jitsi video
-        // call IDs. That logic can be found in the ".video_link" click handler
+        // call IDs. That logic can be found in the "video_link" click handler
         // in static/js/compose.js.
         const videoCallId = randomInt(100000000000000, 999999999999999);
         const videoCallUrl = `${videoChatProvider.jitsiServerUrl}/${videoCallId}`;
@@ -554,7 +554,7 @@ const ComposeBox: React$AbstractComponent<Props, ImperativeHandle> = forwardRef(
       result.push('mandatory-topic-empty');
     }
 
-    if (messageInputValue.trim().length === 0) {
+    if (!isEditing && messageInputValue.trim().length === 0) {
       result.push('message-empty');
     }
 
@@ -573,6 +573,7 @@ const ComposeBox: React$AbstractComponent<Props, ImperativeHandle> = forwardRef(
     numUploading,
     anyQuoteAndReplyInProgress,
     messageInputState,
+    isEditing,
   ]);
 
   const submitButtonDisabled = validationErrors.length > 0;
